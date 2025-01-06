@@ -1784,6 +1784,8 @@ static int uart_stm32_async_tx_abort(const struct device *dev)
 
 static void uart_stm32_async_rx_timeout(struct k_work *work)
 {
+	unsigned int key = irq_lock();
+
 	struct k_work_delayable *dwork = k_work_delayable_from_work(work);
 	struct uart_dma_stream *rx_stream = CONTAINER_OF(dwork,
 			struct uart_dma_stream, timeout_work);
@@ -1798,6 +1800,8 @@ static void uart_stm32_async_rx_timeout(struct k_work *work)
 	} else {
 		uart_stm32_dma_rx_flush(dev, STM32_ASYNC_STATUS_TIMEOUT);
 	}
+
+	irq_unlock(key);
 }
 
 static void uart_stm32_async_tx_timeout(struct k_work *work)
