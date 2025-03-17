@@ -373,7 +373,10 @@ ZTEST(spi_loopback, test_spi_async_call)
 
 	int ret = spi_transceive_signal(spec->bus, &spec->config, &tx, &rx, &async_sig);
 
-	if (ret != -ENOTSUP) {
+	TC_PRINT("=== ret ===: %d \n", ret);
+	TC_PRINT("=== ENOTSUP ===: %d \n", ENOTSUP);
+
+	if (ret == -ENOTSUP) {
 		TC_PRINT("Skipping ASYNC test");
 		return;
 	}
