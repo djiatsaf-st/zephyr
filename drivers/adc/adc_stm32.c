@@ -286,7 +286,7 @@ static int check_buffer(const struct adc_sequence *sequence,
 		return -ENOMEM;
 	}
 
-#if defined(CONFIG_ADC_STM32_DMA)
+#if defined(CONFIG_ADC_STM32_DMA) && defined(CONFIG_SOC_SERIES_STM32H7X)
 	/* Buffer is forced to be in non-cacheable SRAM region to avoid cache maintenance */
 	if (!stm32_buf_in_nocache((uintptr_t)sequence->buffer, needed_buffer_size)) {
 		LOG_ERR("Supplied buffer is not in a non-cacheable region according to DTS.");
