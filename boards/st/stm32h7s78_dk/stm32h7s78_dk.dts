@@ -303,3 +303,16 @@ usb2: &usbotg_fs {
 };
 
 zephyr_udc0: &usb2 {};
+
+&flash0 {
+	partitions {
+		compatible = "fixed-partitions";
+		#address-cells = <1>;
+		#size-cells = <1>;
+
+		boot_partition: partition@0 {
+			label = "mcuboot";
+			reg = <0x00000000 DT_SIZE_K(48)>;
+		};
+	};
+};

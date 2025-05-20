@@ -230,30 +230,136 @@ zephyr_udc0: &usb {
 		 * Current partition is using the first 876K of the flash for M4
 		 */
 
+		// boot_partition: partition@0 {
+		// 	label = "mcuboot";
+		// 	reg = <0x00000000 DT_SIZE_K(48)>;
+		// };
+
+		// slot0_partition: partition@c000 {
+		// 	label = "image-0";
+		// 	reg = <0x0000c000 DT_SIZE_K(400)>;
+		// };
+
+		// slot1_partition: partition@70000 {
+		// 	label = "image-1";
+		// 	reg = <0x00070000 DT_SIZE_K(400)>;
+		// };
+
+		// scratch_partition: partition@d4000 {
+		// 	label = "image-scratch";
+		// 	reg = <0x000d4000 DT_SIZE_K(16)>;
+		// };
+
+		// storage_partition: partition@d8000 {
+		// 	label = "storage";
+		// 	reg = <0x000d8000 DT_SIZE_K(8)>;
+		// };
+
+		// boot_partition: partition@0 {
+		// 	label = "mcuboot";
+		// 	reg = <0x00000000 DT_SIZE_K(64)>;
+		// };
+
+		// slot0_partition: partition@10000 {
+		// 	label = "image-0";
+		// 	reg = <0x000010000 DT_SIZE_K(370)>;
+		// };
+
+		// slot1_partition: partition@6c800{
+		// 	label = "image-1";
+		// 	reg = <0x00006c800 DT_SIZE_K(370)>;
+		// };
+
+		// storage_partition: partition@c9000 {
+		// 	label = "storage";
+		// 	reg = <0x000c9000 DT_SIZE_K(4)>;
+		// };
+
+		// boot_partition: partition@0 {
+		// 	label = "mcuboot";
+		// 	reg = <0x00000000 DT_SIZE_K(64)>;
+		// };
+
+		// slot0_partition: partition@10000 {
+		// 	label = "image-0";
+		// 	reg = <0x000010000 DT_SIZE_K(370)>;
+		// };
+
+		// slot1_partition: partition@6c800{
+		// 	label = "image-1";
+		// 	reg = <0x00006c800 DT_SIZE_K(370)>;
+		// };
+
+		// storage_partition: partition@c9000 {
+		// 	label = "storage";
+		// 	reg = <0x000c9000 DT_SIZE_K(4)>;
+		// };
+
+		// boot_partition: partition@0 {
+		// 	label = "mcuboot";
+		// 	reg = <0x00000000 DT_SIZE_K(64)>;
+		// };
+
+		// slot0_partition: partition@10000 {
+		// 	label = "image-0";
+		// 	reg = <0x000010000 DT_SIZE_K(560)>;
+		// };
+
+		// slot1_partition: partition@9c000{
+		// 	label = "image-1";
+		// 	reg = <0x00009c000 DT_SIZE_K(180)>;
+		// };
+
+		// storage_partition: partition@c9000 {
+		// 	label = "storage";
+		// 	reg = <0x000c9000 DT_SIZE_K(4)>;
+		// };
+
+
+
+
+		// boot_partition: partition@0 {
+		// 	label = "mcuboot";
+		// 	reg = <0x00000000 DT_SIZE_K(64)>;
+		// };
+
+		// slot0_partition: partition@10000 {
+		// 	label = "image-0";
+		// 	reg = <0x00010000 DT_SIZE_K(372)>;
+		// };
+
+		// slot1_partition: partition@6d000{
+		// 	label = "image-1";
+		// 	reg = <0x0006d000 DT_SIZE_K(368)>;
+		// };
+
+		// storage_partition: partition@c9000 {
+		// 	label = "storage";
+		// 	reg = <0x000c9000 DT_SIZE_K(4)>;
+		// };
+
+
 		boot_partition: partition@0 {
 			label = "mcuboot";
-			reg = <0x00000000 DT_SIZE_K(48)>;
+			reg = <0x00000000 DT_SIZE_K(64)>;
 		};
 
-		slot0_partition: partition@c000 {
+		slot0_partition: partition@10000 {
 			label = "image-0";
-			reg = <0x0000c000 DT_SIZE_K(400)>;
+			reg = <0x00010000 DT_SIZE_K(484)>;
 		};
 
-		slot1_partition: partition@70000 {
+		slot1_partition: partition@89000{
 			label = "image-1";
-			reg = <0x00070000 DT_SIZE_K(400)>;
+			reg = <0x00089000 DT_SIZE_K(476)>;
 		};
 
-		scratch_partition: partition@d4000 {
-			label = "image-scratch";
-			reg = <0x000d4000 DT_SIZE_K(16)>;
-		};
-
-		storage_partition: partition@d8000 {
+		storage_partition: partition@100000 {
 			label = "storage";
-			reg = <0x000d8000 DT_SIZE_K(8)>;
+			reg = <0x00100000 DT_SIZE_K(4)>;
 		};
+
+
 	};
 };
 

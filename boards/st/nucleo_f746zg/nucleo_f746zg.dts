@@ -28,6 +28,7 @@
 		zephyr,flash = &flash0;
 		zephyr,dtcm = &dtcm;
 		zephyr,canbus = &can1;
+		zephyr,code-partition = &slot0_partition;
 	};
 
 	leds: leds {
@@ -234,4 +235,179 @@ zephyr_udc0: &usbotg_fs {
 
 &vbat {
 	status = "okay";
+};
+
+&flash0 {
+	partitions {
+		compatible = "fixed-partitions";
+		#address-cells = <1>;
+		#size-cells = <1>;
+
+		// boot_partition: partition@0 {
+		// 	label = "mcuboot";
+		// 	reg = <0x00000000 DT_SIZE_K(64)>;
+		// };
+		// slot0_partition: partition@10000 {
+		// 	label = "image-0";
+		// 	reg = <0x00010000 DT_SIZE_K(384)>;
+		// };
+
+		// slot1_partition: partition@70000 {
+		// 	label = "image-1";
+		// 	reg = <0x00070000 DT_SIZE_K(384)>;
+		// };
+
+		// storage_partition: partition@d0000 {
+		// 	label = "storage";
+		// 	reg = <0x000d0000 DT_SIZE_K(192)>;
+		// };
+
+
+
+
+
+		/* mcuboot: 4 x 32KB for settings */
+		// boot_partition: partition@0 {
+		// 	label = "mcuboot";
+		// 	reg = <0x00000000 DT_SIZE_K(128)>;
+		// };
+		// /* storage: 1 x 128KB for settings */
+		// storage_partition: partition@20000 {
+		// 	label = "storage";
+		// 	reg = <0x00020000 DT_SIZE_K(128)>;
+		// };
+		// /* application image slot : 3 x 128KB */
+		// slot0_partition: partition@40000 {
+		// 	label = "image-0";
+		// 	reg = <0x00040000 DT_SIZE_K(384)>;
+		// };
+		// /* backup slot: 3 x 128KB */
+		// slot1_partition: partition@a0000 {
+		// 	label = "image-1";
+		// 	reg = <0x000a0000 DT_SIZE_K(384)>;
+		// };
+
+
+
+
+		/* mcuboot: 2 x 32KB for settings */
+		// boot_partition: partition@0 {
+		// 	label = "mcuboot";
+		// 	reg = <0x00000000 DT_SIZE_K(64)>;
+		// };
+		// /* storage: 32x2 for settings */
+		// storage_partition: partition@10000 {
+		// 	label = "storage";
+		// 	reg = <0x00010000 DT_SIZE_K(64)>;
+		// };
+		// /* application image slot : 128KB + 256kb */
+		// slot0_partition: partition@20000 {
+		// 	label = "image-0";
+		// 	reg = <0x00020000 DT_SIZE_K(384)>;
+		// };
+		// /* backup slot: 256kb *2 */
+		// slot1_partition: partition@80000 {
+		// 	label = "image-1";
+		// 	reg = <0x00080000 DT_SIZE_K(512)>;
+		// };
+
+
+
+
+		/* best one config ... but don't work*/
+		// boot_partition: partition@0 {
+		// 	label = "mcuboot";
+		// 	reg = <0x00000000 DT_SIZE_K(64)>;
+		// };
+		// /* storage: 32x2 for settings */
+		// storage_partition: partition@10000 {
+		// 	label = "storage";
+		// 	reg = <0x00010000 DT_SIZE_K(192)>;
+		// };
+		// /* application image slot : 128KB + 256kb */
+		// slot0_partition: partition@40000 {
+		// 	label = "image-0";
+		// 	reg = <0x00040000 DT_SIZE_K(256)>;
+		// };
+		// /* backup slot: 256kb *2 */
+		// slot1_partition: partition@80000 {
+		// 	label = "image-1";
+		// 	reg = <0x00080000 DT_SIZE_K(512)>;
+		// };
+
+
+
+
+
+		boot_partition: partition@0 {
+			label = "mcuboot";
+			reg = <0x00000000 DT_SIZE_K(64)>;
+		};
+		/* storage: 32x2 +128kb for settings */
+		storage_partition: partition@10000 {
+			label = "storage";
+			reg = <0x00010000 DT_SIZE_K(192)>;
+		};
+		/* application image slot : 256kb x2 */
+		slot0_partition: partition@40000 {
+			label = "image-0";
+			reg = <0x00040000 DT_SIZE_K(448)>;
+		};
+		/* backup slot: 256kb */
+		slot1_partition: partition@b0000 {
+			label = "image-1";
+			reg = <0x000b0000 DT_SIZE_K(320)>;
+		};
+
+
+
+
+
+		/* bad */
+		// boot_partition: partition@0 {
+		// 	label = "mcuboot";
+		// 	reg = <0x00000000 DT_SIZE_K(64)>;
+		// };
+		// /* storage: 32x2 for settings */
+		// storage_partition: partition@10000 {
+		// 	label = "storage";
+		// 	reg = <0x00010000 DT_SIZE_K(64)>;
+		// };
+		// /* application image slot : 128KB + 256kb */
+		// slot0_partition: partition@20000 {
+		// 	label = "image-0";
+		// 	reg = <0x00020000 DT_SIZE_K(640)>;
+		// };
+		// /* backup slot: 256kb *2 */
+		// slot1_partition: partition@c0000 {
+		// 	label = "image-1";
+		// 	reg = <0x000c0000 DT_SIZE_K(256)>;
+		// };
+
+
+
+
+		/* bad */
+		// boot_partition: partition@0 {
+		// 	label = "mcuboot";
+		// 	reg = <0x00000000 DT_SIZE_K(64)>;
+		// };
+		// /* storage: 32x2 for settings */
+		// storage_partition: partition@10000 {
+		// 	label = "storage";
+		// 	reg = <0x00010000 DT_SIZE_K(192)>;
+		// };
+		// /* application image slot : 128KB + 256kb */
+		// slot0_partition: partition@40000 {
+		// 	label = "image-0";
+		// 	reg = <0x00040000 DT_SIZE_K(384)>;
+		// };
+		// /* backup slot: 256kb *2 */
+		// slot1_partition: partition@a0000 {
+		// 	label = "image-1";
+		// 	reg = <0x000a0000 DT_SIZE_K(384)>;
+		// };
+
+
+	};
 };
