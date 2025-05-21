@@ -6,4 +6,4 @@
 
 STM32_Programmer_CLI -c port=swd mode=UR --power off index=0 --power on index=0 > /dev/null
 
-sleep 1
+sleep 0.5
