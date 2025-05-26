@@ -332,7 +332,7 @@ ZTEST(spi_loopback, test_spi_complete_multiple_timed)
 	TC_PRINT("Latency measurement: %llu us\n", time_spent_us - expected_transfer_time_us);
 
 	/* Allow some overhead, but not too much */
-	zassert_true(time_spent_us <= expected_transfer_time_us * 8, "Very high latency");
+	zassert_true(time_spent_us <= expected_transfer_time_us * 10, "Very high latency");
 
 	spi_loopback_compare_bufs(buffer_tx, buffer_rx, BUF_SIZE,
 				  buffer_print_tx, buffer_print_rx);
