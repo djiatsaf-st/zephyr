@@ -195,7 +195,7 @@ static void spi_loopback_transceive(struct spi_dt_spec *const spec,
 	zassert_ok(pm_device_runtime_get(spec->bus));
 	spi_loopback_gpio_cs_loopback_prepare();
 	ret = spi_transceive_dt(spec, tx, rx);
-	if (ret == -EINVAL || ret == -ENOTSUP || ret == -EFAULT) {
+	if (ret == -EINVAL || ret == -ENOTSUP) {
 		TC_PRINT("Spi config invalid for this controller\n");
 		zassert_ok(pm_device_runtime_put(spec->bus));
 		ztest_test_skip();
@@ -659,7 +659,7 @@ ZTEST(spi_loopback, test_spi_word_size_16)
 	struct spi_dt_spec *spec = loopback_specs[spec_idx];
 
 	spi_loopback_test_word_size(spec, buffer_tx_16, buffer_rx_16, tx_data_16,
-				    sizeof(buffer_tx_16), &spec_copies[2], 16);
+				    sizeof(buffer_tx_16), &spec_copies[2], 15);
 }
 
 /* Test case for 24-bit word size transfers */
