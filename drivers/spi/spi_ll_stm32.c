@@ -1186,6 +1186,14 @@ static int transceive_dma(const struct device *dev,
 	/* This is turned off in spi_stm32_complete(). */
 	spi_stm32_cs_control(dev, true);
 
+	uint8_t frame_size_bytes = bits2bytes(
+			SPI_WORD_SIZE_GET(config->operation));
+
+	data->dma_rx.dma_cfg.source_data_size = frame_size_bytes;
+	data->dma_rx.dma_cfg.dest_data_size = frame_size_bytes;
+	data->dma_tx.dma_cfg.source_data_size = frame_size_bytes;
+	data->dma_tx.dma_cfg.dest_data_size = frame_size_bytes;
+
 	while (data->ctx.rx_len > 0 || data->ctx.tx_len > 0) {
 		size_t dma_len;
 
@@ -1258,9 +1266,6 @@ static int transceive_dma(const struct device *dev,
 		LL_SPI_DisableDMAReq_TX(spi);
 		LL_SPI_DisableDMAReq_RX(spi);
 #endif /* ! st_stm32h7_spi */
-
-		uint8_t frame_size_bytes = bits2bytes(
-			SPI_WORD_SIZE_GET(config->operation));
 
 		if (transfer_dir == LL_SPI_FULL_DUPLEX) {
 			spi_context_update_tx(&data->ctx, frame_size_bytes, dma_len);
