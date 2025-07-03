@@ -20,7 +20,7 @@
 
 #define SLEEP_TIME_STOP0_MS	800
 #define SLEEP_TIME_STOP1_MS	1500
-#define SLEEP_TIME_STANDBY_MS	3000
+#define SLEEP_TIME_STANDBY_MS	1000
 #define SLEEP_TIME_BUSY_MS	2000
 
 static const struct gpio_dt_spec led =
