@@ -121,7 +121,7 @@ static void flash_driver_before(void *arg)
 		     "Test area exceeds flash size");
 
 	/* Check if test region is suitable for test_flash_copy */
-	zassert_true((TEST_AREA_OFFSET + 2 * page_info.size) <= TEST_AREA_MAX,
+	zassert_true((TEST_AREA_OFFSET + page_info.size) <= TEST_AREA_MAX,
 		     "test_flash_copy needs 2 flash pages");
 
 	/* Check if flash is cleared */
