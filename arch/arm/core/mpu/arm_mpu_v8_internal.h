@@ -558,6 +558,8 @@ static int mpu_configure_regions_and_partition(const struct z_arm_mpu_partition
 			(u_reg_index > (reg_index - 1))) {
 			LOG_ERR("Invalid underlying region index %u",
 				u_reg_index);
+			LOG_ERR("index %u, val: %d",u_reg_index, EINVAL);
+			LOG_ERR("u_reg %u, reg_ind: %d",u_reg_index, reg_index - 1);
 			return -EINVAL;
 		}
 
@@ -749,19 +751,25 @@ static int mpu_configure_dynamic_mpu_regions(const struct z_arm_mpu_partition
 {
 	int mpu_reg_index = static_regions_num;
 
+	printf(" ==== step1 ===== \n");
 	/* Disable all MPU regions except for the static ones. */
 	for (int i = mpu_reg_index; i < get_num_regions(); i++) {
 		mpu_clear_region(i);
 	}
+	printf(" ==== step2 ===== \n");
 
 #if defined(CONFIG_MPU_GAP_FILLING)
 	/* Reset MPU regions inside which dynamic memory regions may
 	 * be programmed.
 	 */
+	printf(" ==== step3 ===== \n");
+
 	for (int i = 0; i < MPU_DYNAMIC_REGION_AREAS_NUM; i++) {
 		region_init(dyn_reg_info[i].index,
 			&dyn_reg_info[i].region_conf);
 	}
+
+	printf(" ==== step4 ===== \n");
 
 	/* In ARMv8-M architecture the dynamic regions are programmed on SRAM,
 	 * forming a full partition of the background area, specified by the
@@ -769,7 +777,11 @@ static int mpu_configure_dynamic_mpu_regions(const struct z_arm_mpu_partition
 	 */
 	mpu_reg_index = mpu_configure_regions_and_partition(dynamic_regions,
 		regions_num, mpu_reg_index, true);
+	printf(" ==== step5 ===== \n");
+
 #else
+	printf(" ==== May be ... ==== \n");
+	printf(" ==== step6 ==== \n");
 
 	/* We are going to skip the full partition of the background areas.
 	 * So we can disable MPU regions inside which dynamic memory regions
@@ -778,14 +790,16 @@ static int mpu_configure_dynamic_mpu_regions(const struct z_arm_mpu_partition
 	for (int i = 0; i < MPU_DYNAMIC_REGION_AREAS_NUM; i++) {
 		mpu_clear_region(dyn_reg_info[i].index);
 	}
-
+	printf(" ==== step7 ===== \n");
 	/* The dynamic regions are now programmed on top of
 	 * existing SRAM region configuration.
 	 */
 	mpu_reg_index = mpu_configure_regions(dynamic_regions,
 		regions_num, mpu_reg_index, true);
+	printf(" ==== step8 ===== \n");
 
 #endif /* CONFIG_MPU_GAP_FILLING */
+	printf("  ==== final mpu reg_index: %d \n", mpu_reg_index );
 	return mpu_reg_index;
 }
 

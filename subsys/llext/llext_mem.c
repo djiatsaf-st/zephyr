@@ -105,10 +105,15 @@ static int llext_copy_region(struct llext_loader *ldr, struct llext *ext,
 			block_sz = 1 << LOG2CEIL(block_sz); /* align to next power of two */
 			region_alloc = block_sz;
 			region_align = block_sz;
+			LOG_DBG("BEFORE: region_alloc %ld: region_align %ld, LLEXT_PAGE_SIZE %d", region_alloc, region_align, LLEXT_PAGE_SIZE);
+
 		} else if (IS_ENABLED(CONFIG_ARM_MPU) || IS_ENABLED(CONFIG_ARC_MPU)) {
 			/* ARMv8-M and newer ARC MPUs use 32-byte alignment. */
+			// LOG_DBG("ALIGN BEFORE: region_align : %ld", region_align);
 			region_alloc = ROUND_UP(region_alloc, LLEXT_PAGE_SIZE);
 			region_align = MAX(region_align, LLEXT_PAGE_SIZE);
+			LOG_DBG("NOW: region_alloc %ld: region_align %ld, LLEXT_PAGE_SIZE %d", region_alloc, region_align, LLEXT_PAGE_SIZE);
+
 		} else if (IS_ENABLED(CONFIG_MMU)) {
 			/* MMU targets map memory in page-sized chunks. Round
 			 * the region to multiples of those.
