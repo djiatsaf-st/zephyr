@@ -1281,28 +1281,61 @@ static void uart_stm32_dma_rx_flush(const struct device *dev, int status)
 {
 	struct dma_status stat;
 	struct uart_stm32_data *data = dev->data;
-
 	size_t rx_rcv_len = 0;
 
 	switch (status) {
 	case DMA_STATUS_COMPLETE:
 		/* fully complete */
+
+		/* If offset is already at the end, just reset for next lap and return. */
+		if (data->dma_rx.offset >= data->dma_rx.buffer_length) {
+			data->dma_rx.offset = 0;
+			return;
+		}
 		data->dma_rx.counter = data->dma_rx.buffer_length;
 		break;
 	case DMA_STATUS_BLOCK:
 		/* half complete */
-		data->dma_rx.counter = data->dma_rx.buffer_length / 2;
+		uint32_t half_pos = data->dma_rx.buffer_length / 2;
 
-		break;
+		/* If offset is already at or past half, the timeout handler
+		   * has already dealt with this data. Return immediately.
+		*/
+		if (data->dma_rx.offset >= half_pos) {
+			return;
+	        }
+
+		data->dma_rx.counter = half_pos;
+	        break;
 	default: /* likely STM32_ASYNC_STATUS_TIMEOUT */
 		if (dma_get_status(data->dma_rx.dma_dev, data->dma_rx.dma_channel, &stat) == 0) {
 			rx_rcv_len = data->dma_rx.buffer_length - stat.pending_length;
+
+			/* --- CONTIGUITY WORKAROUND START --- */
+			if (rx_rcv_len < data->dma_rx.offset) {
+				/* 1. Fix counter to the end of the buffer */
+				data->dma_rx.counter = data->dma_rx.buffer_length;
+
+				/* 2. Signal the 'tail' data (offset to buffer_length) */
+				async_evt_rx_rdy(data);
+
+				/* 3. Update offset to 0 to prepare for the 'head' segment */
+				data->dma_rx.offset = 0;
+			}
+			/* --- CONTIGUITY WORKAROUND END --- */
+
 			data->dma_rx.counter = rx_rcv_len;
 		}
 		break;
 	}
 
-	async_evt_rx_rdy(data);
+	/* Signal the new data segment */
+	/* This will be the first half (BLOCK), full buffer (COMPLETE),
+	* or the current position (TIMEOUT).
+	*/
+	if (data->dma_rx.counter > data->dma_rx.offset) {
+		async_evt_rx_rdy(data);
+	}
 
 	switch (status) { /* update offset*/
 	case DMA_STATUS_COMPLETE:
@@ -1314,7 +1347,7 @@ static void uart_stm32_dma_rx_flush(const struct device *dev, int status)
 		data->dma_rx.offset = data->dma_rx.buffer_length / 2;
 		break;
 	default: /* likely STM32_ASYNC_STATUS_TIMEOUT */
-		data->dma_rx.offset += rx_rcv_len - data->dma_rx.offset;
+		data->dma_rx.offset = rx_rcv_len;
 		break;
 	}
 }
