@@ -522,3 +522,23 @@ ZTEST(wdt_basic_test_suite, test_wdt)
 #endif
 	}
 }
+
+static void wdt_basic_test_teardown(void *fixture)
+{
+    const struct device *const wdt = DEVICE_DT_GET(WDT_NODE);
+    int err;
+
+    if (!device_is_ready(wdt)) {
+        return;
+    }
+
+    err = wdt_disable(wdt);
+    if (err < 0 && err != -EPERM && err != -EFAULT) {
+        TC_PRINT("test teardown: watchdog disable error: %d\n", err);
+    } else {
+        TC_PRINT(" ===== test teardown: watchdog disable successfully =====\n");
+    }
+}
+
+ZTEST_SUITE(wdt_basic_test_suite, NULL, NULL, NULL, NULL, wdt_basic_test_teardown);
+// ZTEST_SUITE(wdt_basic_test_suite, NULL, NULL, NULL, NULL, NULL);
