@@ -1,4 +1,3 @@
-identifier: stm32h573i_dk/stm32h573xx/ns
 name: ST STM32H573I Discovery Kit non-secure
 type: mcu
 arch: arm
