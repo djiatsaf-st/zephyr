@@ -18,3 +18,12 @@ supported:
   - canfd
   - netif:eth
 vendor: st
+testing:
+  ignore_tags:
+    - arch
+    - arm
+    - clib
+    - cpp
+    - kernel
+    - posix
+    - cmsis-dsp
