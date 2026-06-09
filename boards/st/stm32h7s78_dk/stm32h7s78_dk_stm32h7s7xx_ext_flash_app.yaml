@@ -20,3 +20,12 @@ supported:
   - netif:eth
   - rtc
 vendor: st
+testing:
+  ignore_tags:
+    - arch
+    - arm
+    - clib
+    - cpp
+    - kernel
+    - posix
+    - cmsis-dsp
