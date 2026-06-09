@@ -34,8 +34,6 @@ tests:
       - stm32f3_disco
       - stm32h7s78_dk/stm32h7s7xx/ext_flash_app
       - stm32h573i_dk
-      - stm32h573i_dk/stm32h573xx/ext_flash_app
-      - stm32h750b_dk/stm32h750xx/ext_flash_app
       - stm32l562e_dk
       - stm32u083c_dk
       - stm32wba65i_dk1
