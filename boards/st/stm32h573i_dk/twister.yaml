@@ -1,3 +1,4 @@
+identifier: stm32h573i_dk/stm32h573xx
 name: ST STM32H573I Discovery Kit
 type: mcu
 arch: arm
@@ -30,5 +31,14 @@ supported:
   - watchdog
 vendor: st
 variants:
+  stm32h573i_dk/stm32h573xx:
+    twister: true
   stm32h573i_dk/stm32h573xx/ext_flash_app:
     twister: false
+    sysbuild: true
+    flash: 32767 # size in kB of 1 app slot minus MCUboot header size (1KB)
+  stm32h573i_dk/stm32h573xx/ns:
+    twister: true
+    ram: 192
+    flash: 575 # size in kB of 1 app slot minus MCUboot header size (1KB)
+
