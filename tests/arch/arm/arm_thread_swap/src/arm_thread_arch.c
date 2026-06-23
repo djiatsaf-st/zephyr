@@ -456,12 +456,36 @@ ZTEST(arm_thread_swap, test_arm_thread_swap)
 	zassert_true((_current->arch.mode_exc_return & EXC_RETURN_FTYPE) != 0,
 		     "Thread Ftype flag not set at initialization\n");
 #if defined(CONFIG_MPU_STACK_GUARD)
+#if defined(CONFIG_FP_HARDABI) || defined(CONFIG_FP_SOFTABI)
+	/*
+	 * When CONFIG_FP_HARDABI or CONFIG_FP_SOFTABI is enabled, the compiler
+	 * may generate FP instructions for any thread. All threads are therefore
+	 * forcibly tagged with K_FP_REGS at creation, and the MPU GUARD FLOAT
+	 * flag is set accordingly -- both are expected to be set at init.
+	 */
+	zassert_true((_current->arch.mode & Z_ARM_MODE_MPU_GUARD_FLOAT_Msk) != 0,
+		     "Thread MPU GUARD FLOAT flag not set at initialization (FP ABI forces K_FP_REGS)\n");
+	zassert_true((_current->base.user_options & K_FP_REGS) != 0,
+		     "Thread K_FP_REGS not set at initialization (FP ABI forces K_FP_REGS)\n");
+#else
 	zassert_true((_current->arch.mode & Z_ARM_MODE_MPU_GUARD_FLOAT_Msk) == 0,
 		     "Thread MPU GUAR DFLOAT flag not clear at initialization\n");
 	zassert_true((_current->base.user_options & K_FP_REGS) == 0,
 		     "Thread K_FP_REGS not clear at initialization\n");
+#endif /* CONFIG_FP_HARDABI || CONFIG_FP_SOFTABI */
+#if defined(CONFIG_FP_HARDABI) || defined(CONFIG_FP_SOFTABI)
+	/*
+	 * With FP_HARDABI/FP_SOFTABI all threads are tagged K_FP_REGS at
+	 * creation. z_arm_mpu_stack_guard_and_fpu_adjust() therefore enables
+	 * lazy stacking on the first switch-in, so LSPEN is expected to be
+	 * set by the time the test body runs.
+	 */
+	zassert_true((FPU->FPCCR & FPU_FPCCR_LSPEN_Msk) != 0,
+		     "Lazy FP Stacking not set at initialization (FP ABI forces K_FP_REGS)\n");
+#else
 	zassert_true((FPU->FPCCR & FPU_FPCCR_LSPEN_Msk) == 0,
 		     "Lazy FP Stacking not clear at initialization\n");
+#endif /* CONFIG_FP_HARDABI || CONFIG_FP_SOFTABI */
 #endif
 #endif /* CONFIG_FPU && CONFIG_FPU_SHARING */
 
