@@ -527,11 +527,31 @@ static int llext_map_sections(struct llext_loader *ldr, struct llext *ext,
 			}
 
 			if (REGIONS_OVERLAP_ON(x, y, sh_offset)) {
-				LOG_ERR("Region %d ELF file range (%#zx-%#zx) "
-					"overlaps with %d (%#zx-%#zx)",
+				/*
+				 * In relocatable objects (ET_REL) file offsets do
+				 * not determine the placement of sections in memory:
+				 * each section is independently copied into its own
+				 * region using a per-section offset (see sect_map[]).
+				 * Compilers may legitimately interleave sections of
+				 * different llext_mem types in the file (e.g. a split
+				 * .rodata straddling the init/fini arrays), which makes
+				 * the spanning regions overlap on file offsets without
+				 * any actual data conflict. Tolerate this case; only
+				 * ET_DYN files, where placement follows the VMA ranges
+				 * checked above, treat a file overlap as fatal.
+				 */
+				if (ldr->hdr.e_type == ET_DYN) {
+					LOG_ERR("Region %d ELF file range (%#zx-%#zx) "
+						"overlaps with %d (%#zx-%#zx)",
+						i, REGION_BOT(x, sh_offset), REGION_TOP(x, sh_offset),
+						j, REGION_BOT(y, sh_offset), REGION_TOP(y, sh_offset));
+					return -ENOEXEC;
+				}
+
+				LOG_DBG("Region %d ELF file range (%#zx-%#zx) "
+					"overlaps with %d (%#zx-%#zx); tolerated for ET_REL",
 					i, REGION_BOT(x, sh_offset), REGION_TOP(x, sh_offset),
 					j, REGION_BOT(y, sh_offset), REGION_TOP(y, sh_offset));
-				return -ENOEXEC;
 			}
 		}
 	}
