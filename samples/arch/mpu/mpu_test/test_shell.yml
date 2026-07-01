@@ -1,4 +1,8 @@
-- command: "mpu mtest 1"
+# Read from the Cortex-M SCB CPUID register (0xE000ED00) and ICSR (0xE000ED04).
+# These live in the System Control Space (PPB), which is always readable in
+# privileged mode on every ARM Cortex-M core and is never governed by the MPU,
+# so the read succeeds on all platforms instead of triggering a bus fault.
+- command: "mpu mtest E000ED00"
   expected: "The value is: 0x.*"
-- command: "mpu mtest 2"
+- command: "mpu mtest E000ED04"
   expected: "The value is: 0x.*"
