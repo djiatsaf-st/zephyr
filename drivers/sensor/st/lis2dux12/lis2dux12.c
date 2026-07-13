@@ -353,6 +353,35 @@ static DEVICE_API(sensor, lis2dux12_driver_api) = {
 		LIS2DUX12_CONFIG_I2C(inst, name);
 
 /*
+ * Instantiation macros used when a device is on an I3C bus.
+ */
+#define LIS2DUX12_CONFIG_I3C(inst, name)						\
+	{										\
+		STMEMSC_CTX_I3C(&lis2dux12_config_##name##_##inst.stmemsc_cfg),		\
+		.stmemsc_cfg = {							\
+			.i3c = &lis2dux12_data_##name##_##inst.i3c_dev,			\
+		},									\
+		.i3c.bus = DEVICE_DT_GET(DT_INST_BUS(inst)),				\
+		.i3c.dev_id = I3C_DEVICE_ID_DT_INST(inst),				\
+		LIS2DUX12_CONFIG_COMMON(inst, name)					\
+	}
+
+/*
+ * If the I3C node has a valid static address (second reg cell != 0 means a
+ * native I3C Provisioned ID, == 0 means the device is used as a legacy I2C
+ * device on the I3C bus), select the correct configuration.
+ */
+#define LIS2DUX12_CONFIG_I3C_OR_I2C(inst, name)						\
+	COND_CODE_0(DT_INST_PROP_BY_IDX(inst, reg, 1),					\
+		    (LIS2DUX12_CONFIG_I2C(inst, name)),					\
+		    (LIS2DUX12_CONFIG_I3C(inst, name)))
+
+#define LIS2DUX12_DEFINE_I3C(inst, name)					\
+	static struct lis2dux12_data lis2dux12_data_##name##_##inst;		\
+	static const struct lis2dux12_config lis2dux12_config_##name##_##inst =	\
+		LIS2DUX12_CONFIG_I3C_OR_I2C(inst, name);
+
+/*
  * Main instantiation macro. Use of COND_CODE_1() selects the right
  * bus-specific macro at preprocessor time.
  */
@@ -360,7 +389,9 @@ static DEVICE_API(sensor, lis2dux12_driver_api) = {
 #define LIS2DUX12_DEFINE(inst, name)							\
 		COND_CODE_1(DT_INST_ON_BUS(inst, spi),					\
 			    (LIS2DUX12_DEFINE_SPI(inst, name)),				\
-			    (LIS2DUX12_DEFINE_I2C(inst, name)));			\
+			    (COND_CODE_1(DT_INST_ON_BUS(inst, i3c),			\
+					 (LIS2DUX12_DEFINE_I3C(inst, name)),		\
+					 (LIS2DUX12_DEFINE_I2C(inst, name)))));		\
 											\
 	SENSOR_DEVICE_DT_INST_DEFINE(inst, name##_init, NULL,				\
 				     &lis2dux12_data_##name##_##inst,			\

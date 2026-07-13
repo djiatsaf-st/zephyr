@@ -35,6 +35,11 @@
 #include <zephyr/drivers/i2c.h>
 #endif
 
+#if DT_HAS_COMPAT_ON_BUS_STATUS_OKAY(st_lis2dux12, i3c) || \
+	DT_HAS_COMPAT_ON_BUS_STATUS_OKAY(st_lis2duxs12, i3c)
+#include <zephyr/drivers/i3c.h>
+#endif
+
 /* Accel sensor sensitivity grain is 61 ug/LSB */
 #define GAIN_UNIT (61LL)
 
@@ -99,6 +104,10 @@ struct lis2dux12_config {
 	DT_HAS_COMPAT_ON_BUS_STATUS_OKAY(st_lis2duxs12, spi)
 		const struct spi_dt_spec spi;
 #endif
+#if DT_HAS_COMPAT_ON_BUS_STATUS_OKAY(st_lis2dux12, i3c) || \
+	DT_HAS_COMPAT_ON_BUS_STATUS_OKAY(st_lis2duxs12, i3c)
+		struct i3c_device_desc **i3c;
+#endif
 	} stmemsc_cfg;
 	uint8_t range;
 	uint8_t pm;
@@ -115,6 +124,14 @@ struct lis2dux12_config {
 	const struct gpio_dt_spec int2_gpio;
 	uint8_t drdy_pin;
 	bool trig_enabled;
+#endif
+
+#if DT_HAS_COMPAT_ON_BUS_STATUS_OKAY(st_lis2dux12, i3c) || \
+	DT_HAS_COMPAT_ON_BUS_STATUS_OKAY(st_lis2duxs12, i3c)
+	struct {
+		const struct device *bus;
+		const struct i3c_device_id dev_id;
+	} i3c;
 #endif
 
 	const struct lis2dux12_chip_api *chip_api;
@@ -164,6 +181,11 @@ struct lis2dux12_data {
 #endif
 
 #endif /* CONFIG_LIS2DUX12_TRIGGER */
+
+#if DT_HAS_COMPAT_ON_BUS_STATUS_OKAY(st_lis2dux12, i3c) || \
+	DT_HAS_COMPAT_ON_BUS_STATUS_OKAY(st_lis2duxs12, i3c)
+	struct i3c_device_desc *i3c_dev;
+#endif
 };
 
 #ifdef CONFIG_LIS2DUX12_STREAM

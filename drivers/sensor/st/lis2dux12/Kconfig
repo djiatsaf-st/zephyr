@@ -4,7 +4,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 menuconfig LIS2DUX12
-	bool "LIS2DUX12 I2C/SPI accelerometer sensor driver"
+	bool "LIS2DUX12 I2C/SPI/I3C accelerometer sensor driver"
 	default y
 	depends on DT_HAS_ST_LIS2DUX12_ENABLED || DT_HAS_ST_LIS2DUXS12_ENABLED
 	depends on ZEPHYR_HAL_ST_MODULE
@@ -12,6 +12,8 @@ menuconfig LIS2DUX12
 		      $(dt_compat_on_bus,$(DT_COMPAT_ST_LIS2DUXS12),i2c)
 	select SPI if $(dt_compat_on_bus,$(DT_COMPAT_ST_LIS2DUX12),spi) || \
 		      $(dt_compat_on_bus,$(DT_COMPAT_ST_LIS2DUXS12),spi)
+	select I3C if $(dt_compat_on_bus,$(DT_COMPAT_ST_LIS2DUX12),i3c) || \
+		      $(dt_compat_on_bus,$(DT_COMPAT_ST_LIS2DUXS12),i3c)
 	select GPIO if $(dt_compat_any_has_prop,$(DT_COMPAT_ST_LIS2DUX12),int1-gpios) || \
 		       $(dt_compat_any_has_prop,$(DT_COMPAT_ST_LIS2DUX12),int2-gpios) || \
 		       $(dt_compat_any_has_prop,$(DT_COMPAT_ST_LIS2DUXS12),int1-gpios) || \

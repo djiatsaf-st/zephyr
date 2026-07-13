@@ -348,6 +348,22 @@ int st_lis2duxs12_init(const struct device *dev)
 	uint8_t chip_id;
 	int ret;
 
+#if DT_HAS_COMPAT_ON_BUS_STATUS_OKAY(st_lis2duxs12, i3c)
+	if (cfg->i3c.bus != NULL) {
+		struct lis2dux12_data *data = dev->data;
+
+		/*
+		 * Need to grab the pointer to the I3C device descriptor
+		 * before we can talk to the sensor.
+		 */
+		data->i3c_dev = i3c_device_find(cfg->i3c.bus, &cfg->i3c.dev_id);
+		if (data->i3c_dev == NULL) {
+			LOG_ERR("Cannot find I3C device descriptor");
+			return -ENODEV;
+		}
+	}
+#endif
+
 	lis2duxs12_exit_deep_power_down(ctx);
 	k_busy_wait(25000);
 
