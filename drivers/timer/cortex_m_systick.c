@@ -54,40 +54,34 @@ extern unsigned int z_clock_hw_cycles_per_sec;
  * much. A floor above the worst-case masking window guarantees at most one
  * wrap between reads, which elapsed() does handle.
  *
- * That is a wall-clock budget, so express it as a fixed time converted to
- * cycles at the actual frequency (k_us_to_cyc_ceil32() follows the runtime
- * rate where the timer reports it), computed at init. A fixed cycle count is
- * meaningless across clock rates: the old 1024-cycle floor is ~10 us at
- * 100 MHz but ~31 ms (31 ticks!) on a 32 kHz SysTick. The tick rate is
- * deliberately not involved; if the resulting value exceeds one tick on some
- * clock, sub-tick timeouts are simply unavailable there.
- *
- * Keep it as small as correctness allows, not as large as a tick would
- * permit: this is a floor for safe rescheduling, not a jitter control.
- * Inflating it does trim the short-period tail, but it eats sub-tick headroom,
- * and as it approaches CYC_PER_TICK the driver can no longer place a timeout
- * inside the current tick, so the small per-ISR surplus is carried over and
- * two ticks get announced at once (a double expiry). 10 us is under a cycle at
- * 32 kHz, where the two-cycle hardware floor takes over; either way it stays
- * far below CYC_PER_TICK.
+ * That is a wall-clock budget, so the formula must be clock-rate-independent.
+ * CYC_PER_TICK/16 satisfies this: at 1000 Hz it gives ~62.5 us regardless of
+ * CPU frequency, comfortably exceeding the worst-case masking window on all
+ * supported cores, including Cortex-M0/M0+ (which use PRIMASK and have no
+ * instruction cache, making their masked windows longer in wall-clock time
+ * than cached M3/M4/M33 cores at the same frequency). A fixed cycle count is
+ * meaningless across clock rates: the old 1024-cycle floor was ~10 us at
+ * 100 MHz but ~31 ms (31 ticks!) on a 32 kHz SysTick. The two-cycle hardware
+ * floor replaces that 1024 constant, so slow-clock boards no longer need a
+ * per-board zephyr,min-timeout-cycles override.
  *
  * A device tree "zephyr,min-timeout-cycles" property still overrides the
- * budget, subject to the same two-cycle hardware floor.
+ * computed value, subject to the same two-cycle hardware floor.
  */
-#define SYSTICK_MIN_DELAY_US 10U
-
 static inline uint32_t systick_min_delay(void)
 {
 	uint32_t override_cyc =
 		DT_PROP_OR(DT_NODELABEL(systick), zephyr_min_timeout_cycles, 0U);
-	uint32_t cyc = (override_cyc != 0U) ? override_cyc
-					    : k_us_to_cyc_ceil32(SYSTICK_MIN_DELAY_US);
+
+	if (override_cyc != 0U) {
+		return MAX(2U, override_cyc);
+	}
 
 	/* Floor at two cycles: LOAD is programmed as (cycles - 1) and a LOAD
-	 * of zero stops the counter. This is the binding floor on a slow clock
-	 * (e.g. 32 kHz, where the 10 us budget rounds below it).
+	 * of zero stops the counter. This is the binding floor on slow clocks
+	 * (e.g. 32 kHz) where CYC_PER_TICK/16 rounds below the hardware min.
 	 */
-	return MAX(2U, cyc);
+	return MAX(2U, (uint32_t)CYC_PER_TICK / 16U);
 }
 
 static uint32_t last_load;
