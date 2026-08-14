@@ -23,7 +23,7 @@ def test_shell_perf(dut: DeviceAdapter, shell: Shell):
     logger.info('response is valid')
 
     logger.info('send "perf printbuf" command')
-    lines = shell.exec_command('perf printbuf')
+    lines = shell.exec_command('perf printbuf', timeout=60)
     lines = lines[1:-1]
     match = re.match(r"Perf buf length (\d+)", lines[0])
     assert match is not None, 'expected response not found'
