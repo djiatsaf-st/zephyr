@@ -30,6 +30,16 @@ some highlights of the Nucleo F429ZI board:
 
 More information about the board can be found at the `Nucleo F429ZI website`_.
 
+NUCLEO-F429ZI Board - Obsolescence Notice
+=========================================
+
+**Important Notice:** The NUCLEO-F429ZI development board is now **OBSOLETE** and
+no longer recommended for new designs or developments.
+STMicroelectronics has officially discontinued this product.
+As a result, we strongly advise all users to transition to the recommended replacement
+board: **NUCLEO-F439ZI**.
+For more information, please refer to the official STMicroelectronics product page `Nucleo F429ZI website`_.
+
 Hardware
 ********
 
