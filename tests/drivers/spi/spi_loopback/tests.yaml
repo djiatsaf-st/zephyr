@@ -73,6 +73,7 @@ tests:
       - nucleo_g474re
       - nucleo_f207zg
       - nucleo_f429zi
+      - nucleo_f439zi
       - nucleo_f746zg
       - nucleo_f767zi
       - nucleo_wba55cg
@@ -110,6 +111,7 @@ tests:
       - nucleo_c5a3zg
       - nucleo_f207zg
       - nucleo_f429zi
+      - nucleo_f439zi
       - nucleo_f746zg
       - nucleo_f767zi
       - nucleo_g071rb
@@ -137,6 +139,7 @@ tests:
       - nucleo_c5a3zg
       - nucleo_f207zg
       - nucleo_f429zi
+      - nucleo_f439zi
       - nucleo_f746zg
       - nucleo_f767zi
       - nucleo_g071rb
@@ -163,6 +166,7 @@ tests:
       - nucleo_c5a3zg
       - nucleo_f207zg
       - nucleo_f429zi
+      - nucleo_f439zi
       - nucleo_f746zg
       - nucleo_f767zi
       - nucleo_g474re

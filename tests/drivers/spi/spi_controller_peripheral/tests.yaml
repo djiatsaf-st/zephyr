@@ -229,5 +229,6 @@ tests:
     filter: CONFIG_SOC_FAMILY_STM32
     platform_allow:
       - nucleo_f429zi/stm32f429xx
+      - nucleo_f439zi/stm32f439xx
       - nucleo_g474re/stm32g474xx
       - nucleo_u385rg_q/stm32u385xx
