@@ -17,6 +17,7 @@ tests:
       - mps2/an385
       - nrf51dk/nrf51822
       - nucleo_f429zi
+      - nucleo_f439zi
       - disco_l475_iot1
       - xg29_rb4412a
     integration_platforms:
@@ -29,6 +30,7 @@ tests:
       - mps2/an385
       - nrf51dk/nrf51822
       - nucleo_f429zi
+      - nucleo_f439zi
       - disco_l475_iot1
       - xg29_rb4412a
     integration_platforms:
@@ -41,6 +43,7 @@ tests:
       - mps2/an385
       - nrf51dk/nrf51822
       - nucleo_f429zi
+      - nucleo_f439zi
       - disco_l475_iot1
       - xg29_rb4412a
     integration_platforms:
@@ -53,6 +56,7 @@ tests:
       - mps2/an385
       - nrf51dk/nrf51822
       - nucleo_f429zi
+      - nucleo_f439zi
       - disco_l475_iot1
       - xg29_rb4412a
     integration_platforms:
@@ -65,6 +69,7 @@ tests:
       - mps2/an385
       - nrf51dk/nrf51822
       - nucleo_f429zi
+      - nucleo_f439zi
       - disco_l475_iot1
       - xg29_rb4412a
     integration_platforms:
