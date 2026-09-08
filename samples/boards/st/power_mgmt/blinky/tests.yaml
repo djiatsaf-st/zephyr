@@ -18,4 +18,5 @@ tests:
     integration_platforms:
       - nucleo_wb55rg
       - nucleo_f429zi
+      - nucleo_f439zi
       - nucleo_c071rb
