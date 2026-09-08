@@ -6,6 +6,7 @@ tests:
   drivers.flash.stm32.f4:
     platform_allow:
       - nucleo_f429zi
+      - nucleo_f439zi
       - google_dragonclaw
     extra_configs:
       - CONFIG_FLASH_STM32_WRITE_PROTECT=y
@@ -16,6 +17,7 @@ tests:
   drivers.flash.stm32.f4.block_registers:
     platform_allow:
       - nucleo_f429zi
+      - nucleo_f439zi
       - google_dragonclaw
     extra_configs:
       - CONFIG_FLASH_STM32_BLOCK_REGISTERS=y

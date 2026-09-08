@@ -244,6 +244,7 @@ tests:
     platform_allow:
       - nucleo_f207zg
       - nucleo_f429zi
+      - nucleo_f439zi
       - nucleo_f446re
       - nucleo_f746zg
     integration_platforms:
@@ -253,6 +254,7 @@ tests:
     platform_allow:
       - nucleo_f207zg
       - nucleo_f429zi
+      - nucleo_f439zi
       - nucleo_f446re
       - nucleo_f746zg
     integration_platforms:
@@ -263,6 +265,7 @@ tests:
     platform_allow:
       - nucleo_f207zg
       - nucleo_f429zi
+      - nucleo_f439zi
       - nucleo_f446re
       - nucleo_f746zg
     integration_platforms:
@@ -273,6 +276,7 @@ tests:
     platform_allow:
       - nucleo_f207zg
       - nucleo_f429zi
+      - nucleo_f439zi
       - nucleo_f446re
       - nucleo_f746zg
     integration_platforms:
@@ -283,6 +287,7 @@ tests:
     platform_allow:
       - nucleo_f207zg
       - nucleo_f429zi
+      - nucleo_f439zi
       - nucleo_f446re
       - nucleo_f746zg
     integration_platforms:
