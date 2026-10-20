@@ -1043,8 +1043,8 @@ static inline int z_impl_rtio_sqe_cancel(struct rtio *r, rtio_sqe_handle_t handl
 			return 0;
 		}
 
-		if (atomic_cas(&iodev_sqe->status, status,
-			       status | RTIO_SQE_STATUS_CANCELED)) {
+		if (z_rtio_sqe_status_cas(&iodev_sqe->status, status,
+					  status | RTIO_SQE_STATUS_CANCELED)) {
 			break;
 		}
 	}

@@ -879,6 +879,59 @@ static inline struct rtio_iodev_sqe *rtio_iodev_sqe_next(const struct rtio_iodev
 	return iodev_sqe->next;
 }
 
+/** @cond ignore */
+/*
+ * On non-SMP the status word is updated without exclusive accesses (LDREX/STREX),
+ * as the SQE pool may live in non-cacheable memory where those never succeed.
+ */
+#ifdef CONFIG_SMP
+static inline void z_rtio_sqe_status_set(atomic_t *status, atomic_val_t val)
+{
+	(void)atomic_set(status, val);
+}
+
+static inline void z_rtio_sqe_status_or(atomic_t *status, atomic_val_t val)
+{
+	(void)atomic_or(status, val);
+}
+
+static inline bool z_rtio_sqe_status_cas(atomic_t *status, atomic_val_t old_val,
+					 atomic_val_t new_val)
+{
+	return atomic_cas(status, old_val, new_val);
+}
+#else
+static inline void z_rtio_sqe_status_set(atomic_t *status, atomic_val_t val)
+{
+	compiler_barrier();
+	*(volatile atomic_t *)status = val;
+	compiler_barrier();
+}
+
+static inline void z_rtio_sqe_status_or(atomic_t *status, atomic_val_t val)
+{
+	unsigned int key = irq_lock();
+
+	*(volatile atomic_t *)status |= val;
+	irq_unlock(key);
+}
+
+static inline bool z_rtio_sqe_status_cas(atomic_t *status, atomic_val_t old_val,
+					 atomic_val_t new_val)
+{
+	unsigned int key = irq_lock();
+	bool swapped = (*(volatile atomic_t *)status == old_val);
+
+	if (swapped) {
+		*(volatile atomic_t *)status = new_val;
+	}
+	irq_unlock(key);
+
+	return swapped;
+}
+#endif /* CONFIG_SMP */
+/** @endcond */
+
 /**
  * @brief Check whether cancellation of a submission has been requested
  *
@@ -907,7 +960,7 @@ static inline bool rtio_iodev_sqe_is_canceled(const struct rtio_iodev_sqe *iodev
  */
 static inline void rtio_iodev_sqe_set_canceled(struct rtio_iodev_sqe *iodev_sqe)
 {
-	atomic_or(&iodev_sqe->status, RTIO_SQE_STATUS_CANCELED);
+	z_rtio_sqe_status_or(&iodev_sqe->status, RTIO_SQE_STATUS_CANCELED);
 }
 
 /**
@@ -964,9 +1017,12 @@ static inline struct rtio_iodev_sqe *rtio_sqe_pool_alloc(struct rtio_sqe_pool *p
 	iodev_sqe->next = NULL;
 
 	/* Mark the slot live. The generation persists from the previous free so a
-	 * handle captured against the prior occupant no longer matches.
+	 * handle captured against the prior occupant no longer matches. Other bits
+	 * are dropped as a .nocache pool is not zeroed at boot.
 	 */
-	atomic_or(&iodev_sqe->status, RTIO_SQE_ALLOCD);
+	z_rtio_sqe_status_set(&iodev_sqe->status,
+			      (atomic_get(&iodev_sqe->status) & RTIO_SQE_GEN_MASK) |
+			      RTIO_SQE_ALLOCD);
 
 	pool->pool_free--;
 
@@ -980,7 +1036,7 @@ static inline void rtio_sqe_pool_free(struct rtio_sqe_pool *pool, struct rtio_io
 	 */
 	atomic_val_t gen = (atomic_get(&iodev_sqe->status) + 1) & RTIO_SQE_GEN_MASK;
 
-	atomic_set(&iodev_sqe->status, gen);
+	z_rtio_sqe_status_set(&iodev_sqe->status, gen);
 
 	mpsc_push(&pool->free_q, &iodev_sqe->q);
 
