@@ -210,7 +210,6 @@ config DEBUG_COREDUMP_SMP_FREEZE_CPUS
 
 config DEBUG_COREDUMP_CRC
 	bool "Append CRC-32 integrity trailer to coredump"
-	select CRC
 	help
 	  Append a CRC-32 (IEEE 802.3) trailer block to every coredump, covering
 	  all preceding bytes of the dump. Host tooling

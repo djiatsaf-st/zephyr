@@ -11,10 +11,6 @@
 #include <zephyr/sys/atomic.h>
 #include <zephyr/sys/byteorder.h>
 #include <zephyr/sys/util.h>
-#ifdef CONFIG_DEBUG_COREDUMP_CRC
-#include <zephyr/sys/crc.h>
-#endif
-
 #include "coredump_internal.h"
 #if defined(CONFIG_DEBUG_COREDUMP_BACKEND_LOGGING)
 extern struct coredump_backend_api coredump_backend_logging;
@@ -63,6 +59,31 @@ static uint32_t coredump_running_crc;
  * dump (see coredump_memory_regions.c).
  */
 uint8_t z_coredump_crc_scratch[COREDUMP_CRC_SCRATCH_SIZE];
+
+/*
+ * CRC-32 (IEEE), same result as crc32_ieee_update(). That one may be backed by
+ * a CRC driver that blocks on a semaphore or a DMA interrupt, which can't be
+ * used on the fatal path.
+ */
+static uint32_t coredump_crc32_update(uint32_t crc, const uint8_t *data, size_t len)
+{
+	static const uint32_t table[16] = {
+		0x00000000U, 0x1db71064U, 0x3b6e20c8U, 0x26d930acU, 0x76dc4190U, 0x6b6b51f4U,
+		0x4db26158U, 0x5005713cU, 0xedb88320U, 0xf00f9344U, 0xd6d6a3e8U, 0xcb61b38cU,
+		0x9b64c2b0U, 0x86d3d2d4U, 0xa00ae278U, 0xbdbdf21cU,
+	};
+
+	crc = ~crc;
+
+	for (size_t i = 0; i < len; i++) {
+		uint8_t byte = data[i];
+
+		crc = (crc >> 4) ^ table[(crc ^ byte) & 0x0f];
+		crc = (crc >> 4) ^ table[(crc ^ ((uint32_t)byte >> 4)) & 0x0f];
+	}
+
+	return ~crc;
+}
 #endif
 
 /*
@@ -397,7 +418,7 @@ void coredump(unsigned int reason, const struct arch_esf *esf,
 	z_coredump_start();
 
 #ifdef CONFIG_DEBUG_COREDUMP_CRC
-	/* crc32_ieee_update() seeds from 0x0 to match crc32_ieee(). */
+	/* Seeded from 0x0 to match crc32_ieee(). */
 	coredump_running_crc = 0U;
 #endif
 
@@ -494,7 +515,7 @@ void coredump_buffer_output(uint8_t *buf, size_t buflen)
 
 		(void)memmove(z_coredump_crc_scratch, src, chunk);
 		coredump_running_crc =
-			crc32_ieee_update(coredump_running_crc, z_coredump_crc_scratch, chunk);
+			coredump_crc32_update(coredump_running_crc, z_coredump_crc_scratch, chunk);
 		backend_api->buffer_output(z_coredump_crc_scratch, chunk);
 
 		src += chunk;
